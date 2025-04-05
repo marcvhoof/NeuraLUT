@@ -28,6 +28,12 @@ NeuraLUT is the first quantized neural network training methodology that maps de
 
 ## Install requierements
 wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+bash ~/Miniconda3-latest-Linux-x86_64.sh
+
+Manually state yes to the license agreement, yes for auto-environment setting 
+
+Refresh your terminal
+source ~/.bashrc
 
 ## 🛠️ Quickstart Guide
 
