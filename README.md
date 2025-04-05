@@ -91,6 +91,7 @@ Download and install from [Xilinx Vivado](https://www.xilinx.com/products/design
 ### ✅ Verilator
 
 ```bash
+sudo apt install nix-bin
 nix-store --realise /nix/store/q12yxbndfwibfs5jbqwcl83xsa5b0dh8-verilator-4.110
 ```
 
