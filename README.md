@@ -29,6 +29,7 @@ NeuraLUT is the first quantized neural network training methodology that maps de
 ## Clone the repository
 ```bash
 git clone https://github.com/marcvhoof/NeuraLUT.git
+cd NeuraLUT
 ```
 ## Install requirements
 ```bash
