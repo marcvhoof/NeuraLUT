@@ -49,7 +49,7 @@ source ~/.bashrc
 > Requires [Miniconda](https://docs.conda.io/en/latest/miniconda.html)
 
 ```bash
-conda create -n neuralut python=3.12.4
+conda create -n neuralut python=3.10
 conda activate neuralut
 pip install torch==2.4.0 torchvision==0.19.0
 ```
