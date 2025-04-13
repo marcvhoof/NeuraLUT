@@ -2,7 +2,7 @@
 #
 #  NeuraLUT is a derivative work based on LogicNets,
 #  which is licensed under the Apache License 2.0.
-
+#
 #  Copyright (C) 2021 Xilinx, Inc
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
@@ -51,9 +51,7 @@ def generate_truth_tables(model: nn.Module, verbose: bool = False) -> None:
                 print(f"Calculating truth tables for {name}")
             module.calculate_truth_tables()
             if verbose:
-                print(
-                    f"Truth tables generated for {len(module.neuron_truth_tables)} neurons"
-                )
+                print(f"Truth tables generated for {len(module.neuron_truth_tables)} neurons")
     model.training = training
 
 
@@ -89,46 +87,46 @@ def module_list_to_verilog_module(
     add_registers: bool = True,
     generate_bench: bool = False,
 ):
+    import concurrent.futures, os, time
     input_bitwidth = None
     output_bitwidth = None
-    module_contents = ""
+
+    # --- PART 1: Export each layer's verilog file sequentially ---
+    layer_results = {}
     for i in range(len(module_list)):
-        m = module_list[i]
-        if type(m) == SparseLinearNeq:
-            module_prefix = f"layer{i}"
-            module_input_bits, module_output_bits = m.gen_layer_verilog(
-                module_prefix, output_directory, generate_bench=generate_bench
-            )
-            if i == 0:
-                input_bitwidth = module_input_bits
-            elif i == len(module_list) - 1:
-                output_bitwidth = module_output_bits
-            module_contents += layer_connection_verilog(
-                module_prefix,
-                input_string=f"M{i}",
-                input_bits=module_input_bits,
-                output_string=f"M{i+1}",
-                output_bits=module_output_bits,
-                output_wire=i != len(module_list) - 1,
-                register=add_registers,
-            )
-        else:
-            raise Exception(
-                f"Expect type(module) == SparseLinearNeq, {type(m)} found"
-            )
+         module_prefix = f"layer{i}"
+         bit_in, bit_out = module_list[i].gen_layer_verilog(module_prefix, output_directory, generate_bench=generate_bench)
+         print(f"Layer {i} exported (input bits: {bit_in}, output bits: {bit_out}).")
+         layer_results[i] = (bit_in, bit_out)
+    input_bitwidth = layer_results[0][0]
+    output_bitwidth = layer_results[len(module_list)-1][1]
+
+    # --- PART 2: Read each per-layer verilog file concurrently to assemble the top-level module ---
+    def read_layer(i):
+         module_prefix = f"layer{i}"
+         start = time.time()
+         with open(f"{output_directory}/{module_prefix}.v", "r") as f:
+              content = f.read()
+         elapsed = time.time() - start
+         print(f"Layer {i} file read in {elapsed:.4f} seconds")
+         return content
+    with concurrent.futures.ThreadPoolExecutor(max_workers=max(1, (os.cpu_count() or 1) // 2)) as executor:
+         layer_contents_list = list(executor.map(read_layer, range(len(module_list))))
+    module_contents = "\n".join(layer_contents_list)
+    
     module_list_verilog = generate_logicnets_verilog(
-        module_name=module_name,
-        input_name="M0",
-        input_bits=input_bitwidth,
-        output_name=f"M{len(module_list)}",
-        output_bits=output_bitwidth,
-        module_contents=module_contents,
+         module_name=module_name,
+         input_name="M0",
+         input_bits=input_bitwidth,
+         output_name=f"M{len(module_list)}",
+         output_bits=output_bitwidth,
+         module_contents=module_contents,
     )
     reg_verilog = generate_register_verilog()
     with open(f"{output_directory}/myreg.v", "w") as f:
-        f.write(reg_verilog)
+         f.write(reg_verilog)
     with open(f"{output_directory}/{module_name}.v", "w") as f:
-        f.write(module_list_verilog)
+         f.write(module_list_verilog)
 
 
 class SparseLinear(nn.Linear):
@@ -171,11 +169,11 @@ class SparseLinearNeq(nn.Module):
         self.width_n = width_n
 
         self.relu = nn.ReLU()
-        self.fc1 = SparseLinear(fan_in, out_features*width_n)
-        self.fc2 = SparseLinear(width_n, out_features*width_n)
-        self.fc3 = SparseLinear(width_n, out_features*width_n)
+        self.fc1 = SparseLinear(fan_in, out_features * width_n)
+        self.fc2 = SparseLinear(width_n, out_features * width_n)
+        self.fc3 = SparseLinear(width_n, out_features * width_n)
         self.fc4 = SparseLinear(width_n, out_features)
-        self.res0 = SparseLinear(fan_in, out_features*width_n)
+        self.res0 = SparseLinear(fan_in, out_features * width_n)
         self.res1 = SparseLinear(width_n, out_features)
 
         self.output_quant = output_quant
@@ -199,32 +197,40 @@ class SparseLinearNeq(nn.Module):
         total_input_bits = self.in_features * input_bitwidth
         total_output_bits = self.out_features * output_bitwidth
         layer_contents = f"module {module_prefix} (input [{total_input_bits-1}:0] M0, output [{total_output_bits-1}:0] M1);\n\n"
-        output_offset = 0
-        for index in range(self.out_features):
-            module_name = f"{module_prefix}_N{index}"
-            indices, _, _, _ = self.neuron_truth_tables[index]
-            neuron_verilog = self.gen_neuron_verilog(
-                index, module_name
-            )  # Generate the contents of the neuron verilog
-            with open(f"{directory}/{module_name}.v", "w") as f:
-                f.write(neuron_verilog)
-            if generate_bench:
-                neuron_bench = self.gen_neuron_bench(
-                    index, module_name
-                )  # Generate the contents of the neuron verilog
-                with open(f"{directory}/{module_name}.bench", "w") as f:
-                    f.write(neuron_bench)
-            connection_string = generate_neuron_connection_verilog(
-                indices, input_bitwidth
-            )  # Generate the string which connects the synapses to this neuron
-            wire_name = f"{module_name}_wire"
-            connection_line = f"wire [{len(indices)*input_bitwidth-1}:0] {wire_name} = {{{connection_string}}};\n"
-            inst_line = f"{module_name} {module_name}_inst (.M0({wire_name}), .M1(M1[{output_offset+output_bitwidth-1}:{output_offset}]));\n\n"
-            layer_contents += connection_line + inst_line
-            output_offset += output_bitwidth
+ 
+        import concurrent.futures, time, os
+        def process_neuron(index):
+             module_name = f"{module_prefix}_N{index}"
+             start = time.time()
+             indices, _, _, _ = self.neuron_truth_tables[index]
+             neuron_verilog = self.gen_neuron_verilog(index, module_name)
+             with open(f"{directory}/{module_name}.v", "w") as f:
+                  f.write(neuron_verilog)
+             if generate_bench:
+                  neuron_bench = self.gen_neuron_bench(index, module_name)
+                  with open(f"{directory}/{module_name}.bench", "w") as f:
+                       f.write(neuron_bench)
+             connection_string = generate_neuron_connection_verilog(indices, input_bitwidth)
+             wire_name = f"{module_name}_wire"
+             output_offset = index * output_bitwidth
+             connection_line = f"wire [{len(indices)*input_bitwidth-1}:0] {wire_name} = {{{connection_string}}};\n"
+             inst_line = f"{module_name} {module_name}_inst (.M0({wire_name}), .M1(M1[{output_offset+output_bitwidth-1}:{output_offset}]));\n\n"
+             elapsed = time.time() - start
+             print(f"Neuron {module_name} processed in {elapsed:.4f} seconds")
+             return index, connection_line + inst_line
+ 
+        neuron_connections = [None] * self.out_features
+        with concurrent.futures.ThreadPoolExecutor(max_workers=max(1, (os.cpu_count() or 1) // 2)) as executor:
+             futures = {executor.submit(process_neuron, i): i for i in range(self.out_features)}
+             for future in concurrent.futures.as_completed(futures):
+                  idx, conn_lines = future.result()
+                  neuron_connections[idx] = conn_lines
+        for conn in neuron_connections:
+             layer_contents += conn
+ 
         layer_contents += "endmodule"
         with open(f"{directory}/{module_prefix}.v", "w") as f:
-            f.write(layer_contents)
+             f.write(layer_contents)
         return total_input_bits, total_output_bits
 
     # TODO: Move the verilog string templates to elsewhere
@@ -245,8 +251,8 @@ class SparseLinearNeq(nn.Module):
             entry_str = ""
             for idx in range(len(indices)):
                 val = input_perm_matrix[i, idx]
-                entry_str += self.input_quant.get_bin_str_from_int(val, is_cuda=self.cuda)
-            res_str = self.output_quant.get_bin_str_from_int(bin_output_states[i], is_cuda=self.cuda)
+                entry_str += self.input_quant.get_bin_str_from_int_with_cache(val, is_cuda=self.cuda)
+            res_str = self.output_quant.get_bin_str_from_int_with_cache(bin_output_states[i], is_cuda=self.cuda)
             lut_string += f"\t\t\t{int(cat_input_bitwidth)}'b{entry_str}: M1r = {int(output_bitwidth)}'b{res_str};\n"
         return generate_lut_verilog(
             module_name, int(cat_input_bitwidth), int(output_bitwidth), lut_string
@@ -269,7 +275,7 @@ class SparseLinearNeq(nn.Module):
         # Sort the input_perm_matrix to match the bench format
         input_state_space_bin_str = list(
             map(
-                lambda y: list(map(lambda z: self.input_quant.get_bin_str_from_int(z, is_cuda=self.cuda), y)),
+                lambda y: list(map(lambda z: self.input_quant.get_bin_str_from_int_with_cache(z, is_cuda=self.cuda), y)),
                 input_perm_matrix,
             )
         )
@@ -282,7 +288,7 @@ class SparseLinearNeq(nn.Module):
             output_bin_str = reduce(
                 lambda b, c: b + c,
                 map(
-                    lambda a: self.output_quant.get_bin_str_from_int(a, is_cuda=self.cuda)[
+                    lambda a: self.output_quant.get_bin_str_from_int_with_cache(a, is_cuda=self.cuda)[
                         int(output_bitwidth) - 1 - i
                     ],
                     sorted_bin_output_states,
@@ -335,7 +341,6 @@ class SparseLinearNeq(nn.Module):
                 f.write("\n".join(formatted_logs))
             print(f"Logged {len(formatted_logs)} entries for {neuron_name} to {file_path}")
 
-
     # TODO: This function might be a useful utility outside of this class..
     def table_lookup(
         self,
@@ -383,7 +388,7 @@ class SparseLinearNeq(nn.Module):
                 neuron_log_entry = []
                 for sample in connected_input:
                     sample_bin = [
-                        self.input_quant.get_bin_str_from_int(val.item(), self.cuda)
+                        self.input_quant.get_bin_str_from_int_with_cache(val.item(), self.cuda)
                         for val in sample
                     ]
                     neuron_log_entry.append(sample_bin)
@@ -457,10 +462,10 @@ class SparseLinearNeq(nn.Module):
             input_state_space = list()  # TODO: is a list the right data-structure here?
             bin_state_space = list()
             neuron_state_space = (
-                self.input_quant.get_state_space(is_cuda=self.cuda)
+                self.input_quant.get_state_space_with_cache(is_cuda=self.cuda)
             )  # TODO: this call should include the index of the element of interest
             bin_space = (
-                self.input_quant.get_bin_state_space(is_cuda=self.cuda)
+                self.input_quant.get_bin_state_space_with_cache(is_cuda=self.cuda)
             )  # TODO: this call should include the index of the element of interest
             input_state_space.append(neuron_state_space)
             bin_state_space.append(bin_space)
