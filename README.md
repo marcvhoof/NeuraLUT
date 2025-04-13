@@ -75,7 +75,8 @@ Clone the [ReducedLUT repository](https://github.com/ollycassidy13/ReducedLUT), 
 git clone https://github.com/ollycassidy13/ReducedLUT
 cd ReducedLUT
 make
-export REDUCEDLUT="/absolute/path/to/executable"
+export REDUCEDLUT="$(pwd)/reducedlut"  
+echo "REDUCEDLUT is set to: $REDUCEDLUT"
 cd ..
 ```
 
