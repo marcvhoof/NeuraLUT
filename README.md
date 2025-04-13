@@ -26,6 +26,22 @@ NeuraLUT is the first quantized neural network training methodology that maps de
 
 ---
 
+## Clone the repository
+```bash
+git clone https://github.com/marcvhoof/NeuraLUT.git
+cd NeuraLUT
+```
+## Install requirements
+```bash
+wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+bash ~/Miniconda3-latest-Linux-x86_64.sh
+```
+Manually state yes to the license agreement, yes for auto-environment setting 
+
+Refresh your terminal
+```bash
+source ~/.bashrc
+```
 ## 🛠️ Quickstart Guide
 
 ### 1. Set Up Conda Environment
@@ -75,7 +91,8 @@ Download and install from [Xilinx Vivado](https://www.xilinx.com/products/design
 ### ✅ Verilator
 
 ```bash
-nix-store --realise /nix/store/q12yxbndfwibfs5jbqwcl83xsa5b0dh8-verilator-4.110
+sudo apt install nix-bin
+sudo nix-store --realise /nix/store/q12yxbndfwibfs5jbqwcl83xsa5b0dh8-verilator-4.110
 ```
 
 ### ✅ oh-my-xilinx
