@@ -97,7 +97,7 @@ wandb.login()
     
 ## 🌱 Getting Started - go to the dataset directories
 
-In the ReducedLUT paper results were presented based on 3 models. Models based on Jet Substructure Classification can be found [here](datasets/jet_substructure/) and the MNIST model can be found [here](datasets/mnist/). Instructions on how to train, map and compress each of these models are provided within each of the linked dataset directories.
+In the ReducedLUT paper results were presented based on 3 models. Models based on Jet Substructure Classification can be found [here](datasets/jet_substructure/) and the MNIST model can be found [here](datasets/mnist/). Instructions on how to train, map and compress each of these models are provided within each of the linked dataset directories. Using WandDB, you can easily track the training process. 
 
 ## 🔢 ReducedLUT Flow
 
