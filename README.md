@@ -12,12 +12,6 @@ This code is part of a publication in the ACM/SIGDA International Symposium on F
 
 This section describes the steps required to set up your environment, install necessary dependencies, and configure the project for use.
 
-### Clone this repository
-```bash
-git clone https://github.com/marcvhoof/NeuraLUT.git -b reducedlut
-cd NeuraLUT
-```
-
 ### Install Conda
 ```bash
 wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
@@ -30,6 +24,11 @@ Refresh your terminal
 source ~/.bashrc
 ```
 
+### Clone this repository
+```bash
+git clone https://github.com/marcvhoof/NeuraLUT.git -b reducedlut
+cd NeuraLUT
+```
 
 ### Create a Conda Environment with Python 3.9, PyTorch, Torchvision, wandDB and additional dependencies
 
