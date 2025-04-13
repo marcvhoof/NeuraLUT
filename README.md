@@ -26,10 +26,11 @@ source ~/.bashrc
 
 ### Create a Conda Environment with Python 3.9, PyTorch, Torchvision, wandDB and additional dependencies
 
-> Requires [Miniconda](https://docs.conda.io/en/latest/miniconda.html)
+> Requires [Miniconda](https://docs.conda.io/en/latest/miniconda.html) and will overwrite existing environments!
 
 ```bash
-conda create -n neuralut python=3.9
+conda create -n neuralut python=3.9 -y
+source "$(conda info --base)/etc/profile.d/conda.sh"
 conda activate reducedlut
 pip install torch==2.5.1 torchvision==0.20.1 --index-url https://download.pytorch.org/whl/cu118
 pip install wandb
