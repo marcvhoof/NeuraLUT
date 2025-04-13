@@ -32,14 +32,14 @@ source ~/.bashrc
 conda create -n neuralut python=3.9
 conda activate reducedlut
 pip install torch==2.5.1 torchvision==0.20.1 --index-url https://download.pytorch.org/whl/cu118
-pip install -r requirements.txt
 pip install wandb
 ```
 
-### Clone this repository
+### Clone this repository and install dependencies
 ```bash
 git clone https://github.com/marcvhoof/NeuraLUT.git -b reducedlut
 cd NeuraLUT
+pip install -r requirements.txt
 ```
 
 ### Install Verilator
