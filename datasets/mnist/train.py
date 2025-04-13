@@ -46,7 +46,7 @@ configs = {
         "width_n": 16,
         "weight_decay": 0,
         "batch_size": 128,
-        "epochs": 500,
+        "epochs": 1,#500
         "learning_rate": 0.003,
         "seed": 8971561,
         "checkpoint": None,
@@ -77,7 +77,7 @@ other_options = {
     "cuda": None,
     "log_dir": None,
     "checkpoint": None,
-    "device": 1,
+    "device": 0,
 }
 
 
@@ -182,6 +182,7 @@ def train(model, train_cfg, options):
         accLoss = 0.0
         correct = 0
         for batch_idx, (data, target) in enumerate(train_loader):
+            print(f"Epoch {epoch}, Batch {batch_idx} start")
             if options["cuda"]:
                 data, target = data.cuda(), target.cuda()
             optimizer.zero_grad()
