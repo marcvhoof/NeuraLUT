@@ -12,48 +12,55 @@ This code is part of a publication in the ACM/SIGDA International Symposium on F
 
 This section describes the steps required to set up your environment, install necessary dependencies, and configure the project for use.
 
+### Clone this repository
+```bash
+git clone https://github.com/marcvhoof/NeuraLUT.git -b reducedlut
+cd NeuraLUT
+```
+
 ### Install Conda
+```bash
+wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+bash ~/Miniconda3-latest-Linux-x86_64.sh
+```
+Manually state yes to the license agreement, yes for auto-environment setting 
 
-Download and install [Miniconda](https://docs.conda.io/en/latest/miniconda.html) or [Anaconda](https://www.anaconda.com/products/distribution) 
+Refresh your terminal
+```bash
+source ~/.bashrc
+```
 
 
-### Create a Conda Environment with Python 3.9
+### Create a Conda Environment with Python 3.9, PyTorch, Torchvision, wandDB and additional dependencies
+
+> Requires [Miniconda](https://docs.conda.io/en/latest/miniconda.html)
 
 ```bash
-conda create -n reducedlut python=3.9 
+conda create -n neuralut python=3.9
 conda activate reducedlut
-```
-
-### Install PyTorch and Torchvision
-
-Install PyTorch and Torchvision. We used version 2.5.1. Instructions for your CUDA version/operating system can be found [here](https://pytorch.org/get-started/locally/).
-
-```bash
 pip install torch==2.5.1 torchvision==0.20.1 --index-url https://download.pytorch.org/whl/cu118
-```
-
-### Install Python Dependencies
-
-Install additional Python dependencies using `requirements.txt`:
-
-```bash
 pip install -r requirements.txt
+pip install wandb
 ```
 
 ### Install Verilator
 
-Download and install [Verilator 4.110](https://www.veripool.org/projects/verilator/wiki/Installing) following the instructions for your operating system.
+```bash
+sudo apt install nix-bin
+sudo nix-store --realise --add-root /nix/store/q12yxbndfwibfs5jbqwcl83xsa5b0dh8-verilator-4.110
+sudo ln -s $(pwd)/result/bin/verilator /usr/local/bin/verilator
+```
+### Install Brevitas
+
+```bash
+conda install -y packaging pyparsing
+conda install -y docrep -c conda-forge
+pip install --no-cache-dir git+https://github.com/Xilinx/brevitas.git@67be9b58c1c63d3923cac430ade2552d0db67ba5
+```
 
 ### Install Vivado Design Suite
 
 Download and install the [Vivado Design Suite](https://www.xilinx.com/products/design-tools/vivado.html) from Xilinx. Follow the official installation guide provided with the suite. In our paper we used Vivado 2020.1.
-
-### Clone the NeuraLUT Repository
-
-```bash
-git clone https://github.com/MartaAndronic/NeuraLUT -b ReducedLUT
-cd NeuraLUT
-```
 
 ### Install the NeuraLUT Package
 
