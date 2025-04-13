@@ -309,7 +309,7 @@ if __name__ == "__main__":
         convert_verilog_to_hex(options_cfg["log_dir"])
         remove_verilog_luts(options_cfg["log_dir"])
         run_reducedlut(options_cfg["log_dir"], options_cfg["exiguity"], options_cfg["log_bits"], 1)
-        tidy(options_cfg["log_dir"])
+        #tidy(options_cfg["log_dir"]) FIXME cleared important files
     
     io_filename = None
 
