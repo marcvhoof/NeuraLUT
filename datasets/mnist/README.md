@@ -5,7 +5,7 @@ To produce models capable of replicating the results found in our paper please f
 ## MNIST Model
 ```
 python train.py --cuda --device 0
-python neq2lut.py --checkpoint ./test_0/best_accuracy.pth --log-dir ./test_0/verilog/ --add-registers --seed 8971561 --device 1 --cuda --reducedlut --exiguity 250
+python neq2lut.py --checkpoint ./test_0/best_accuracy.pth --log-dir ./test_0/verilog/ --add-registers --seed 8971561 --device 0 --cuda --reducedlut --exiguity 250
 ```
 
 ## 📖 Citation
