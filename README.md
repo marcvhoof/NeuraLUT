@@ -24,12 +24,6 @@ Refresh your terminal
 source ~/.bashrc
 ```
 
-### Clone this repository
-```bash
-git clone https://github.com/marcvhoof/NeuraLUT.git -b reducedlut
-cd NeuraLUT
-```
-
 ### Create a Conda Environment with Python 3.9, PyTorch, Torchvision, wandDB and additional dependencies
 
 > Requires [Miniconda](https://docs.conda.io/en/latest/miniconda.html)
@@ -40,6 +34,12 @@ conda activate reducedlut
 pip install torch==2.5.1 torchvision==0.20.1 --index-url https://download.pytorch.org/whl/cu118
 pip install -r requirements.txt
 pip install wandb
+```
+
+### Clone this repository
+```bash
+git clone https://github.com/marcvhoof/NeuraLUT.git -b reducedlut
+cd NeuraLUT
 ```
 
 ### Install Verilator
