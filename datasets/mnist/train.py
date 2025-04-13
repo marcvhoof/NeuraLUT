@@ -371,7 +371,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--device", 
         type=int, 
-        default=1, 
+        default=0, 
         metavar="", 
         help="Device_id for GPU",
     )
