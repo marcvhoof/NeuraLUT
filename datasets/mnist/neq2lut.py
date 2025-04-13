@@ -48,7 +48,7 @@ from reducedlut.synthesis import synthesize_and_get_resource_counts
 other_options = {
     "seed": 3,
     "cuda": None,
-    "device": 1,
+    "device": 0,
     "log_dir": None,
     "checkpoint": None,
     "add_registers": False,
@@ -171,7 +171,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--cuda",
         action="store_true",
-        default=False,
+        default=True,
         help="Train on a GPU (default: %(default)s)",
     )
     parser.add_argument(
@@ -288,7 +288,7 @@ if __name__ == "__main__":
     if options_cfg["reducedlut"]:
         print("Running logging")
         logging_inference(lut_model)
-        train_accuracy = test(lut_model, train_loader, cuda=options_cfg["cuda"])
+        #train_accuracy = test(lut_model, train_loader, cuda=options_cfg["cuda"])
         print("Flushing logs")
         flush_logs(lut_model, options_cfg["log_dir"])
         logging_inference(lut_model)
@@ -314,11 +314,11 @@ if __name__ == "__main__":
     io_filename = None
 
     print("Running inference simulation of Verilog-based model...")
-    lut_model.verilog_inference(options_cfg["log_dir"], "neuralut.v", logfile=io_filename, add_registers=options_cfg["add_registers"])
+    #lut_model.verilog_inference(options_cfg["log_dir"], "neuralut.v", logfile=io_filename, add_registers=options_cfg["add_registers"]) FIXME not working
     print("Testing Verilog-Based Model")
     verilog_accuracy = test(lut_model, test_loader, cuda=options_cfg["cuda"])
     print("Verilog-Based Model accuracy: %f" % (verilog_accuracy))
 
     print("Running out-of-context synthesis")
-    ret = synthesize_and_get_resource_counts(options_cfg["log_dir"], "neuralut", fpga_part='xcvu9p-flgb2104-2-i', clk_period_ns='1.1', post_synthesis=1)
-    print("Max f: " + str(ret))
+    #ret = synthesize_and_get_resource_counts(options_cfg["log_dir"], "neuralut", fpga_part='xcvu9p-flgb2104-2-i', clk_period_ns='1.1', post_synthesis=1)
+    #print("Max f: " + str(ret))
