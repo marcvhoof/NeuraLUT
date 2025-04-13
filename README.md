@@ -67,16 +67,7 @@ Download and install the [Vivado Design Suite](https://www.xilinx.com/products/d
 pip install .
 ```
 
-### Install oh-my-xilinx
-
-Clone our oh-my-xilinx repository to your local directory and set the `OHMYXILINX` environment variable:
-
-```bash
-git clone https://github.com/ollycassidy13/oh-my-xilinx /path/to/local/dir
-export OHMYXILINX="/absolute/path/to/local/dir"
-```
-
-### Install ReducedLUT
+### Install ReducedLUT binaries
 
 Clone the [ReducedLUT repository](https://github.com/ollycassidy13/ReducedLUT), compile, and set the `REDUCEDLUT` enviroment variable to the executable's path:
 
@@ -88,12 +79,13 @@ export REDUCEDLUT="/absolute/path/to/executable"
 cd ..
 ```
 
-### Install Brevitas
+### Install oh-my-xilinx
+
+Clone our oh-my-xilinx repository to your local directory and set the `OHMYXILINX` environment variable:
 
 ```bash
-conda install -y packaging pyparsing
-conda install -y docrep -c conda-forge
-pip install --no-cache-dir git+https://github.com/Xilinx/brevitas.git@67be9b58c1c63d3923cac430ade2552d0db67ba5
+git clone https://github.com/ollycassidy13/oh-my-xilinx /path/to/local/dir
+export OHMYXILINX="/absolute/path/to/local/dir"
 ```
 
 ### Login to Wandb
