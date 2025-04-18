@@ -119,6 +119,12 @@ Below is a diagram illustrating the flow:
 
 ![ReducedLUT Flow Diagram](img/flow.jpg)
 
+## Running again after installation
+```bash
+conda activate reducedlut
+export REDUCEDLUT="$(pwd)/reducedlut"  
+```
+
 ## 🧪 Summary of Major Modifications from NeuraLUT
 - Complete implementation of the toolflow desibed in the ReducedLUT paper to compress the generated L-LUTs
 - Implemented logging in the forward pass
