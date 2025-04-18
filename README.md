@@ -122,7 +122,8 @@ Below is a diagram illustrating the flow:
 ## Running again after installation
 ```bash
 conda activate reducedlut
-export REDUCEDLUT="$(pwd)/reducedlut"  
+export REDUCEDLUT="$(pwd)/reducedlut"
+export PATH=$PATH:/nix/store/q12yxbndfwibfs5jbqwcl83xsa5b0dh8-verilator-4.110/bin  
 ```
 
 ## 🧪 Summary of Major Modifications from NeuraLUT
