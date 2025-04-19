@@ -43,6 +43,11 @@ cd NeuraLUT
 pip install -r requirements.txt
 ```
 
+### Install Yosys
+```bash
+sudo apt install yosys
+```
+
 ### Install Verilator
 
 ```bash
